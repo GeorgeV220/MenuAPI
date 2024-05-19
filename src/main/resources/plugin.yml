@@ -1,0 +1,5 @@
+name: "${pluginName}"
+author: "${author}"
+version: '${packageName}'
+main: com.georgev22.menuapi.Main
+api-version: '1.13'

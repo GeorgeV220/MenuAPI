@@ -1,0 +1,98 @@
+import net.raphimc.javadowngrader.gradle.task.DowngradeJarTask
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+}
+
+plugins {
+    id 'io.github.goooler.shadow' version '8.1.7'
+    id 'net.raphimc.java-downgrader' version '1.1.2'
+    id 'java'
+    id 'idea'
+}
+
+apply from: "$rootDir/gradle/publish.gradle"
+
+if (project.hasProperty("local_script")) {
+    apply from: file(local_script + "/build.local.gradle")
+}
+
+group project.property("group")
+description project.property("description") as String
+version project.property("version")
+
+repositories {
+    mavenLocal()
+    maven {
+        url = uri('https://repo.papermc.io/repository/maven-public/')
+    }
+
+    maven {
+        url = uri('https://oss.sonatype.org/content/groups/public/')
+    }
+
+    maven {
+        url = uri('https://repo.codemc.io/repository/maven-public/')
+    }
+
+    maven {
+        url = uri('https://repo.georgev22.com/releases')
+    }
+
+    maven {
+        url = uri('https://repo.georgev22.com/snapshots')
+    }
+
+    maven {
+        url = uri('https://repo.maven.apache.org/maven2/')
+    }
+}
+
+dependencies {
+    compileOnly "io.papermc.paper:paper-api:${mcVersion}-R0.1-SNAPSHOT"
+    compileOnly "de.tr7zw:item-nbt-api:${nbtAPIVersion}"
+
+    implementation "com.georgev22.library.minecraft:shared:${libraryVersion}"
+    implementation "com.georgev22.library.minecraft:bukkit:${libraryVersion}"
+    implementation "com.georgev22.library:yaml:${libraryVersion}"
+    implementation "com.georgev22.library:utilities:${libraryVersion}"
+    implementation "com.georgev22.library:maps:${libraryVersion}"
+    implementation "co.aikar:acf-paper:${acfVersion}"
+}
+
+shadowJar {
+    setArchiveClassifier('')
+    relocate 'com.georgev22.library', 'com.georgev22.menuapi.library'
+    relocate 'co.aikar.commands', 'com.georgev22.menuapi.acf.commands'
+    relocate 'co.aikar.locales', 'com.georgev22.menuapi.acf.locales'
+    relocate 'de.tr7zw.changeme.nbtapi', 'com.georgev22.menuapi.nbtapi'
+    relocate 'org.yaml.snakeyaml', 'com.georgev22.menuapi.snakeyaml'
+}
+
+tasks.create("java8Jar", DowngradeJarTask) {
+    input = tasks.shadowJar.archiveFile.get().asFile
+    outputSuffix = "-java8"
+    compileClassPath = sourceSets.main.compileClasspath
+}.dependsOn("shadowJar")
+shadowJar.finalizedBy("java8Jar")
+
+tasks.build.dependsOn(shadowJar)
+tasks.publish.dependsOn(shadowJar)
+tasks.java8Jar.dependsOn(jar, shadowJar)
+
+processResources {
+    filesMatching('plugin.yml') {
+        project.properties.put('pluginName', this.pluginName)
+        project.properties.put("version", this.version)
+        project.properties.put("author", this.author)
+        project.properties.put("packageName", this.packageName)
+        project.properties.put("description", this.description)
+        expand project.properties
+        filteringCharset 'UTF-8'
+        expand project.properties
+    }
+}
+
+defaultTasks 'build'
