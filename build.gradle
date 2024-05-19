@@ -79,7 +79,8 @@ tasks.create("java8Jar", DowngradeJarTask) {
 shadowJar.finalizedBy("java8Jar")
 
 tasks.build.dependsOn(shadowJar)
-tasks.publish.dependsOn(shadowJar)
+tasks.shadowJar.dependsOn(jar)
+tasks.publish.dependsOn(jar, shadowJar)
 tasks.java8Jar.dependsOn(jar, shadowJar)
 
 processResources {
