@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/GeorgeV220/MenuAPI/compare/v1.0.0...v1.1.0) (2024-05-20)
+
+
+### Features
+
+* Remove Plugin functionality ([79030eb](https://github.com/GeorgeV220/MenuAPI/commit/79030ebd8da5e0ada76533e05a3d640ab771fc01))
+
 # 1.0.0 (2024-05-20)
 
 
