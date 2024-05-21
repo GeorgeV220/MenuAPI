@@ -27,6 +27,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,6 +43,8 @@ import java.util.Set;
  * This is useful to change the title of an inventory.
  */
 @SuppressWarnings("ConstantConditions")
+@Deprecated
+@ApiStatus.Internal
 public final class InventoryUpdate {
 
     // Classes.

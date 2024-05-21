@@ -23,6 +23,7 @@ package com.georgev22.menuapi.utilities;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -52,6 +53,8 @@ import java.util.regex.Pattern;
  * @author Crypto Morin
  * @version 7.1.0
  */
+@Deprecated
+@ApiStatus.Internal
 public final class ReflectionUtils {
     /**
      * We use reflection mainly to avoid writing a new class for version barrier.
