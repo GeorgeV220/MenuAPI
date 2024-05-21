@@ -63,7 +63,7 @@ import java.util.Map;
  * during the serialization and deserialization process.
  * </p>
  */
-public class SerializableItemStack implements Serializable, ConfigurationSerializable {
+public class SerializableItemStack implements Serializable, ConfigurationSerializable, com.georgev22.library.yaml.serialization.ConfigurationSerializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
