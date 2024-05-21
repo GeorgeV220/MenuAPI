@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public interface IMenu {
 
@@ -29,7 +30,7 @@ public interface IMenu {
      * @param player the {@link Player} for whom the menu will be opened.
      * @param page   the page number to be opened in the menu.
      */
-    void open(@NotNull Player player, int page);
+    void open(@NotNull Player player, int page, Consumer<IMenu> menuConsumer);
 
     /**
      * Closes the menu for all players.
