@@ -267,7 +267,7 @@ public final class ReflectionUtils {
      * Gives the {@code handle} object if the server version is equal or greater than the given version.
      * This method is purely for readability and should be always used with {@link VersionHandler#orElse(Object)}.
      *
-     * @see #v(int, int, Object)
+     * @see ReflectionUtils#v(int, int, Object)
      * @see VersionHandler#orElse(Object)
      * @since 5.0.0
      */
@@ -276,7 +276,7 @@ public final class ReflectionUtils {
     }
 
     /**
-     * Overload for {@link #v(int, T)} that supports patch versions
+     * Overload for {@link ReflectionUtils#v(int, Object)} that supports patch versions
      *
      * @since 9.5.0
      */

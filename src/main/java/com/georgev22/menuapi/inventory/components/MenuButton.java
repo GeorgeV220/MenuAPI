@@ -12,7 +12,11 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 public class MenuButton extends AMenuButton {
 
     /**
-     * {@inheritDoc}
+     * Constructs a new MenuButton.
+     *
+     * @param item      the item to be displayed on the button
+     * @param slot      the slot number of the button
+     * @param pageRange the page range of the button
      */
     public MenuButton(SerializableItemStack item, int slot, PageRange pageRange) {
         super(item, slot, pageRange);
