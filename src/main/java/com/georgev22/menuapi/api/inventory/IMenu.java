@@ -74,6 +74,13 @@ public interface IMenu {
      */
     int getPage(Player player);
 
+    /**
+     * Retrieves the list of viewers in the menu.
+     *
+     * @return a list of {@link Viewer} objects representing the viewers in the menu.
+     */
+    @UnmodifiableView
+    List<Viewer> getViewers();
 
     /**
      * Retrieves the number of pages in the menu.

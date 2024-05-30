@@ -34,7 +34,6 @@ public class Menu implements IMenu {
     private final List<IMenuButton> buttons;
 
     private final int rows;
-    private final List<Viewer> viewers = new ArrayList<>();
     private int maxPages;
 
     /**
@@ -109,15 +108,15 @@ public class Menu implements IMenu {
         if (page < 1) return;
         if (this.maxPages != -1) if (page > this.maxPages) return;
 
-        if (this.viewers.stream().anyMatch(viewer -> viewer.getPlayer().equals(player))) {
-            Optional<Viewer> optionalViewer = this.viewers.stream().filter(viewer -> viewer.getPlayer().equals(player)).findFirst();
-            optionalViewer.ifPresent(viewer -> viewer.setPage(page));
-        } else {
-            this.viewers.add(new Viewer(player, page));
-        }
-
         Inventory inventory = new MenuInventoryHolder(this, player).getInventory();
-        inventory.clear();
+        Viewer viewer = ViewerManager.getViewer(this, player);
+        if (viewer == null) {
+            viewer = ViewerManager.addViewer(this, new Viewer(player, page, inventory));
+        } else {
+            viewer.setPage(page);
+            viewer.setInventory(inventory);
+        }
+        viewer.getInventory().clear();
         for (
                 IMenuButton button : this.buttons.stream()
                 .filter(b -> b.getPageRange().isPageInRange(page))
@@ -137,7 +136,7 @@ public class Menu implements IMenu {
      */
     @Override
     public void close() {
-        ListIterator<Viewer> iterator = this.viewers.listIterator();
+        ListIterator<Viewer> iterator = ViewerManager.getViewers(this).listIterator();
         while (iterator.hasNext()) {
             Viewer viewer = iterator.next();
             viewer.getPlayer().closeInventory();
@@ -156,7 +155,10 @@ public class Menu implements IMenu {
             player.closeInventory();
         }
 
-        this.viewers.stream().filter(viewer -> viewer.getPlayer().equals(player)).findFirst().ifPresent(this.viewers::remove);
+        Viewer viewer = ViewerManager.getViewer(this, player);
+        if (viewer != null) {
+            ViewerManager.removeViewer(this, viewer);
+        }
     }
 
     /**
@@ -221,14 +223,20 @@ public class Menu implements IMenu {
 
     @Override
     public int getPage(Player player) {
-        Viewer viewer = this.viewers.stream().filter(viewer1 -> viewer1.getPlayer().equals(player)).findFirst().orElse(null);
+        Viewer viewer = ViewerManager.getViewer(this, player);
         return viewer != null ? viewer.getPage() : 0;
     }
 
     /**
-     * Retrieves the number of pages in the menu.
-     *
-     * @return the number of pages in the menu.
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Viewer> getViewers() {
+        return ViewerManager.getViewers(this);
+    }
+
+    /**
+     * {@inheritDoc}
      */
     @Override
     public int getPages() {
