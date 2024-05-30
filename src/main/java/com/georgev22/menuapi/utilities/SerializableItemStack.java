@@ -72,6 +72,7 @@ public class SerializableItemStack implements Serializable, ConfigurationSeriali
      * The transient ItemStack to be serialized.
      */
     private transient ItemStack itemStack;
+    private transient ItemStack visualItemStack;
 
     private transient BigInteger amount;
 
@@ -81,7 +82,17 @@ public class SerializableItemStack implements Serializable, ConfigurationSeriali
      * @param itemStack The ItemStack to be serialized.
      */
     public SerializableItemStack(ItemStack itemStack, BigInteger amount) {
+        this(itemStack, itemStack, amount);
+    }
+
+    /**
+     * Constructs a new SerializableItemStack from an ItemStack.
+     *
+     * @param itemStack The ItemStack to be serialized.
+     */
+    public SerializableItemStack(ItemStack itemStack, ItemStack visualItemStack, BigInteger amount) {
         this.itemStack = itemStack;
+        this.visualItemStack = visualItemStack;
         this.amount = amount;
     }
 
@@ -144,13 +155,26 @@ public class SerializableItemStack implements Serializable, ConfigurationSeriali
      */
     public static @NotNull SerializableItemStack fromNBT(String nbtString) throws SerializerException {
         ReadWriteNBT readWriteNBT = NBT.parseNBT(nbtString);
+        //noinspection DuplicatedCode
         BigInteger amount = new BigInteger(readWriteNBT.getOrDefault("sAmount", "1"));
         readWriteNBT.removeKey("sAmount");
+
+        ItemStack visualItemStack = null;
+        if (readWriteNBT.getKeys().contains("visualItemStack")) {
+            ReadWriteNBT visualNBT = NBT.parseNBT(readWriteNBT.getOrDefault("visualItemStack", "{}"));
+            visualItemStack = NBT.itemStackFromNBT(visualNBT);
+            readWriteNBT.removeKey("visualItemStack");
+        }
+
         ItemStack itemStack = NBT.itemStackFromNBT(readWriteNBT);
         if (itemStack == null) {
             throw new SerializerException("Could not deserialize item stack");
         }
-        return new SerializableItemStack(itemStack, amount);
+
+        if (visualItemStack == null) {
+            visualItemStack = itemStack.clone();
+        }
+        return new SerializableItemStack(itemStack, visualItemStack, amount);
     }
 
     /**
@@ -202,7 +226,16 @@ public class SerializableItemStack implements Serializable, ConfigurationSeriali
      * @return The original ItemStack.
      */
     public ItemStack getItemStack() {
-        return itemStack;
+        return itemStack.clone();
+    }
+
+    /**
+     * Retrieves the visual ItemStack.
+     *
+     * @return The visual ItemStack.
+     */
+    public ItemStack getVisualItemStack() {
+        return this.visualItemStack.clone();
     }
 
     /**
@@ -218,19 +251,34 @@ public class SerializableItemStack implements Serializable, ConfigurationSeriali
      * Sets the ItemStack.
      *
      * @param itemStack The ItemStack to be set.
+     * @return The updated SerializableItemStack instance.
      */
-    public void setItemStack(@NotNull ItemStack itemStack) {
+    public SerializableItemStack setItemStack(@NotNull ItemStack itemStack) {
         this.itemStack = itemStack.clone();
         this.itemStack.setAmount(1);
+        return this;
+    }
+
+    /**
+     * Sets the visual ItemStack.
+     *
+     * @param visualItemStack The visual ItemStack to be set.
+     * @return The updated SerializableItemStack instance.
+     */
+    public SerializableItemStack setVisualItemStack(@NotNull ItemStack visualItemStack) {
+        this.visualItemStack = visualItemStack.clone();
+        return this;
     }
 
     /**
      * Sets the amount of the ItemStack.
      *
      * @param amount The amount to be set.
+     * @return The updated SerializableItemStack instance.
      */
-    public void setAmount(BigInteger amount) {
+    public SerializableItemStack setAmount(BigInteger amount) {
         this.amount = amount;
+        return this;
     }
 
     /**
@@ -261,13 +309,28 @@ public class SerializableItemStack implements Serializable, ConfigurationSeriali
     private void readObject(@NotNull ObjectInputStream inputStream) throws IOException, ClassNotFoundException, SerializerException {
         try {
             ReadWriteNBT readWriteNBT = NBT.parseNBT(inputStream.readUTF());
+            //noinspection DuplicatedCode
             BigInteger amount = new BigInteger(readWriteNBT.getOrDefault("sAmount", "1"));
             readWriteNBT.removeKey("sAmount");
+
+            ItemStack visualItemStack = null;
+            if (readWriteNBT.getKeys().contains("visualItemStack")) {
+                ReadWriteNBT visualNBT = NBT.parseNBT(readWriteNBT.getOrDefault("visualItemStack", "{}"));
+                visualItemStack = NBT.itemStackFromNBT(visualNBT);
+                readWriteNBT.removeKey("visualItemStack");
+            }
+
             ItemStack itemStack = NBT.itemStackFromNBT(readWriteNBT);
             if (itemStack == null) {
                 throw new SerializerException("Could not deserialize item stack");
             }
+
+            if (visualItemStack == null) {
+                visualItemStack = itemStack.clone();
+            }
+
             this.itemStack = itemStack;
+            this.visualItemStack = visualItemStack;
             this.amount = amount;
         } catch (Exception e) {
             throw new SerializerException("Error during deserialization of ItemStack: " + e.getMessage());
@@ -277,7 +340,9 @@ public class SerializableItemStack implements Serializable, ConfigurationSeriali
     @Override
     public String toString() {
         ReadWriteNBT nbt = NBT.itemStackToNBT(this.itemStack);
+        ReadWriteNBT visualNBT = NBT.itemStackToNBT(this.visualItemStack);
         nbt.setString("sAmount", this.amount.toString());
+        nbt.setString("visualItemStack", visualNBT.toString());
         return nbt.toString();
     }
 
