@@ -30,10 +30,10 @@ jar {
 
 publishing {
     publications {
-        shadow(MavenPublication) { publication ->
-            project.shadow.component(publication)
-            artifactId = project.getName().toLowerCase()
-            groupId = ((String) project.getGroup()).toLowerCase()
+        maven(MavenPublication) {
+            artifact("$buildDir/libs/menuapi-${project.version}-downgraded.jar") {
+                builtBy tasks.downgradeJar
+            }
             artifact sourcesJar
             artifact javadocJar
         }
