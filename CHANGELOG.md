@@ -1,3 +1,12 @@
+# [1.3.0](https://github.com/GeorgeV220/MenuAPI/compare/v1.2.0...v1.3.0) (2024-05-30)
+
+
+### Features
+
+* Add ViewerManager ([8f7267d](https://github.com/GeorgeV220/MenuAPI/commit/8f7267d45e7ba5e5f48aa67d7aa7c85b0a6acbdb))
+* Add visual item stack to SerializableItemStack ([27dc2a3](https://github.com/GeorgeV220/MenuAPI/commit/27dc2a35b5405cccae6a746ee57e4f11b44e9e26))
+* Replace IMenuItem with SerializableItemStack in IMenuButton ([9e47d44](https://github.com/GeorgeV220/MenuAPI/commit/9e47d44894c0e7615171b28e0126eee93b5522ff))
+
 # [1.2.0](https://github.com/GeorgeV220/MenuAPI/compare/v1.1.0...v1.2.0) (2024-05-21)
 
 
