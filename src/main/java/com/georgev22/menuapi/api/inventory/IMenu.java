@@ -2,7 +2,9 @@ package com.georgev22.menuapi.api.inventory;
 
 import com.georgev22.menuapi.api.inventory.components.IMenuButton;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.InventoryView;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -26,11 +28,23 @@ public interface IMenu {
 
     /**
      * Opens the menu for a specific player on a given page.
+     * <p>Example:</p>
+     * <pre>{@code
+     * menu.open(player, 1, menu -> {
+     *     menu.setTitle(player, "Test Menu");
+     * }, inventory -> {
+     *     inventory.clear();
+     * });
+     * }</pre>
      *
-     * @param player the {@link Player} for whom the menu will be opened.
-     * @param page   the page number to be opened in the menu.
+     * @param player            the {@link Player} for whom the menu will be opened.
+     * @param page              the page number to be opened in the menu.
+     * @param menuConsumer      a {@link Consumer} functional interface that serves as a callback mechanism for the menu
+     *                          after it has been opened.
+     * @param inventoryConsumer a {@link Consumer} functional interface that serves as a callback mechanism for the inventory
+     *                          after the menu has been opened.
      */
-    void open(@NotNull Player player, int page, Consumer<IMenu> menuConsumer);
+    void open(@NotNull Player player, int page, Consumer<IMenu> menuConsumer, Consumer<InventoryView> inventoryConsumer);
 
     /**
      * Closes the menu for all players.
@@ -95,7 +109,6 @@ public interface IMenu {
      * @param pages the number of pages to be set in the menu.
      */
     void setPages(int pages);
-
 
 
 }

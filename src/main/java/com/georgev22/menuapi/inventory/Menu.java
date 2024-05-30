@@ -7,14 +7,12 @@ import com.georgev22.library.minecraft.BukkitMinecraftUtils.MinecraftVersion;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -72,11 +70,8 @@ public class Menu implements IMenu {
         this.buttons = new ArrayList<>(buttons);
     }
 
-
     /**
-     * Retrieves the list of menu buttons.
-     *
-     * @return a list of {@link IMenuButton} objects representing the buttons in the menu.
+     * {@inheritDoc}
      */
     @Override
     public @NotNull List<IMenuButton> getButtons() {
@@ -84,9 +79,7 @@ public class Menu implements IMenu {
     }
 
     /**
-     * Sets the list of menu buttons.
-     *
-     * @param buttons a list of {@link IMenuButton} objects to be set in the menu.
+     * {@inheritDoc}
      */
     @Override
     public void setButtons(@NotNull List<IMenuButton> buttons) {
@@ -95,15 +88,10 @@ public class Menu implements IMenu {
     }
 
     /**
-     * This method opens the menu for a specific player on a given page. It also adds a new viewer if the player is not already viewing the menu.
-     * Button items are added to the inventory for the specific menu page and the player is updated with the open inventory view.
-     *
-     * @param player       the {@link Player} for whom the menu will be opened.
-     * @param page         the page number to be opened in the menu.
-     * @param menuConsumer a {@link Consumer} functional interface that serves as a callback mechanism after the menu has been opened.
+     * {@inheritDoc}
      */
     @Override
-    public void open(@NotNull Player player, int page, Consumer<IMenu> menuConsumer) {
+    public void open(@NotNull Player player, int page, Consumer<IMenu> menuConsumer, Consumer<InventoryView> inventoryConsumer) {
         if (page == 0) return;
         if (page < 1) return;
         if (this.maxPages != -1) if (page > this.maxPages) return;
@@ -122,17 +110,15 @@ public class Menu implements IMenu {
                 .filter(b -> b.getPageRange().isPageInRange(page))
                 .toList()
         ) {
-            ItemStack itemStack = button.getItem().getItemStack().getItemStack();
-            itemStack.setAmount(button.getItem().getItemStack().getAmount().intValue());
-            inventory.setItem(button.getSlot(), itemStack);
+            inventory.setItem(button.getSlot(), button.getItem().getVisualItemStack());
         }
 
-        player.openInventory(inventory);
+        inventoryConsumer.accept(player.openInventory(inventory));
         menuConsumer.accept(this);
     }
 
     /**
-     * Closes the menu for all players.
+     * {@inheritDoc}
      */
     @Override
     public void close() {
@@ -145,9 +131,7 @@ public class Menu implements IMenu {
     }
 
     /**
-     * Closes the menu for a specific player.
-     *
-     * @param player the {@link Player} for whom the menu will be closed.
+     * {@inheritDoc}
      */
     @Override
     public void close(@NotNull Player player) {
@@ -162,9 +146,7 @@ public class Menu implements IMenu {
     }
 
     /**
-     * Sets the title of the menu.
-     *
-     * @param title the title to be set for the menu.
+     * {@inheritDoc}
      */
     @Override
     public void setTitle(@NotNull Player player, @NotNull String title) {
@@ -178,15 +160,14 @@ public class Menu implements IMenu {
             if (MinecraftVersion.getCurrentVersion().isAbove(MinecraftVersion.V1_19_R3)) {
                 inventoryView.setTitle(title);
             } else {
+                //noinspection deprecation
                 InventoryUpdate.updateInventory(player, title);
             }
         }
     }
 
     /**
-     * Retrieves the title of the menu.
-     *
-     * @return the title of the menu.
+     * {@inheritDoc}
      */
     @Override
     public String getTitle(@NotNull Player player) {
@@ -212,15 +193,16 @@ public class Menu implements IMenu {
     }
 
     /**
-     * Retrieves the number of rows in the menu.
-     *
-     * @return the number of rows in the menu.
+     * {@inheritDoc}
      */
     @Override
     public int getRows() {
         return this.rows;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getPage(Player player) {
         Viewer viewer = ViewerManager.getViewer(this, player);
@@ -244,9 +226,7 @@ public class Menu implements IMenu {
     }
 
     /**
-     * Sets the number of pages in the menu.
-     *
-     * @param pages the number of pages to be set in the menu.
+     * {@inheritDoc}
      */
     @Override
     public void setPages(int pages) {

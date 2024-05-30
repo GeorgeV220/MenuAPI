@@ -2,6 +2,7 @@ package com.georgev22.menuapi.api.inventory.components;
 
 
 import com.georgev22.menuapi.api.inventory.PageRange;
+import com.georgev22.menuapi.utilities.SerializableItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
@@ -15,7 +16,7 @@ public interface IMenuButton {
      *
      * @return The item in the button.
      */
-    IMenuItem getItem();
+    SerializableItemStack getItem();
 
     /**
      * Retrieves the slot of the button.
@@ -36,7 +37,7 @@ public interface IMenuButton {
      *
      * @param item The item to be set.
      */
-    void setItem(IMenuItem item);
+    void setItem(SerializableItemStack item);
 
     /**
      * Sets the slot of the button.
@@ -45,6 +46,12 @@ public interface IMenuButton {
      */
     void setSlot(int slot);
 
+    /**
+     * Handles the click event of the button.
+     *
+     * @param player The player who clicked the button.
+     * @param event  The click event.
+     */
     void clickEvent(Player player, InventoryClickEvent event);
 
 }

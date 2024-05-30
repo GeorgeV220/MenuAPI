@@ -7,11 +7,11 @@ package com.georgev22.menuapi.api.inventory;
  * </p>
  * <p>
  * Example usage:
- * <pre>
+ * <pre>{@code
  *     PageRange range = new PageRange(5, 10);
  *     int currentPage = 7;
  *     boolean isPageInRange = range.isPageInRange(currentPage); // Returns true
- * </pre>
+ * }</pre>
  * </p>
  */
 @SuppressWarnings("ALL")
