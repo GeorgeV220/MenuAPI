@@ -1,3 +1,10 @@
+## [2.0.1-alpha.1](https://github.com/GeorgeV220/MenuAPI/compare/v2.0.0...v2.0.1-alpha.1) (2024-06-01)
+
+
+### Bug Fixes
+
+* **SerializableItemStack:** JSON parse ([a71dea1](https://github.com/GeorgeV220/MenuAPI/commit/a71dea18601ce6ea88d06f7b5cd959c6811efaa1))
+
 # [2.0.0](https://github.com/GeorgeV220/MenuAPI/compare/v1.3.0...v2.0.0) (2024-06-01)
 
 
