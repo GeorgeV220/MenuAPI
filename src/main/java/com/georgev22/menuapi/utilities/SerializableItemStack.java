@@ -1,5 +1,7 @@
 package com.georgev22.menuapi.utilities;
 
+import com.georgev22.library.maps.HashObjectMap;
+import com.georgev22.library.maps.ObjectMap;
 import com.georgev22.menuapi.exceptions.SerializerException;
 import de.tr7zw.changeme.nbtapi.NBT;
 import de.tr7zw.changeme.nbtapi.iface.ReadWriteNBT;
@@ -73,6 +75,7 @@ public class SerializableItemStack implements Serializable, ConfigurationSeriali
      */
     private transient ItemStack itemStack;
     private transient ItemStack visualItemStack;
+    private transient ObjectMap<String, String> customData;
 
     private transient BigInteger amount;
 
@@ -94,6 +97,7 @@ public class SerializableItemStack implements Serializable, ConfigurationSeriali
         this.itemStack = itemStack;
         this.visualItemStack = visualItemStack;
         this.amount = amount;
+        this.customData = new HashObjectMap<>();
     }
 
     /**
@@ -281,6 +285,20 @@ public class SerializableItemStack implements Serializable, ConfigurationSeriali
         return this;
     }
 
+    public SerializableItemStack addData(@NotNull String key, String value) {
+        this.customData.put(key, value);
+        return this;
+    }
+
+    public SerializableItemStack removeData(@NotNull String key) {
+        this.customData.remove(key);
+        return this;
+    }
+
+    public String getData(@NotNull String key) {
+        return this.customData.get(key);
+    }
+
     /**
      * Custom serialization method using NBT serialization.
      *
@@ -320,6 +338,15 @@ public class SerializableItemStack implements Serializable, ConfigurationSeriali
                 readWriteNBT.removeKey("visualItemStack");
             }
 
+            String customDataJson;
+            if (readWriteNBT.getKeys().contains("customData")) {
+                customDataJson = readWriteNBT.getOrDefault("customData", "{}");
+                readWriteNBT.removeKey("customData");
+            } else {
+                customDataJson = "{}";
+            }
+            this.customData = jsonToMap(customDataJson);
+
             ItemStack itemStack = NBT.itemStackFromNBT(readWriteNBT);
             if (itemStack == null) {
                 throw new SerializerException("Could not deserialize item stack");
@@ -343,6 +370,7 @@ public class SerializableItemStack implements Serializable, ConfigurationSeriali
         ReadWriteNBT visualNBT = NBT.itemStackToNBT(this.visualItemStack);
         nbt.setString("sAmount", this.amount.toString());
         nbt.setString("visualItemStack", visualNBT.toString());
+        nbt.setString("customData", mapToJson(this.customData));
         return nbt.toString();
     }
 
@@ -378,5 +406,33 @@ public class SerializableItemStack implements Serializable, ConfigurationSeriali
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public static @NotNull String mapToJson(@NotNull Map<String, String> map) {
+        StringBuilder jsonString = new StringBuilder("{");
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            jsonString.append("\"").append(entry.getKey()).append("\":");
+            jsonString.append("\"").append(entry.getValue()).append("\"");
+            jsonString.append(",");
+        }
+
+        if (jsonString.length() > 1) {
+            jsonString.deleteCharAt(jsonString.length() - 1);
+        }
+        jsonString.append("}");
+        return jsonString.toString();
+    }
+
+    private static @NotNull ObjectMap<String, String> jsonToMap(String jsonString) {
+        ObjectMap<String, String> map = new HashObjectMap<>();
+        jsonString = jsonString.substring(1, jsonString.length() - 1);
+        String[] pairs = jsonString.split(",");
+        for (String pair : pairs) {
+            String[] keyValue = pair.split(":");
+            String key = keyValue[0].replace("\"", "").trim();
+            String value = keyValue[1].replace("\"", "").trim();
+            map.put(key, value);
+        }
+        return map;
     }
 }
