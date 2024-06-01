@@ -3,6 +3,9 @@ package com.georgev22.menuapi.utilities;
 import com.georgev22.library.maps.HashObjectMap;
 import com.georgev22.library.maps.ObjectMap;
 import com.georgev22.menuapi.exceptions.SerializerException;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import de.tr7zw.changeme.nbtapi.NBT;
 import de.tr7zw.changeme.nbtapi.iface.ReadWriteNBT;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
@@ -81,6 +84,7 @@ public class SerializableItemStack implements Serializable, ConfigurationSeriali
 
     @Serial
     private static final long serialVersionUID = 1L;
+    private static final Gson gson = new Gson();
 
     private transient ItemStack itemStack;
     private transient ItemStack visualItemStack;
@@ -602,30 +606,22 @@ public class SerializableItemStack implements Serializable, ConfigurationSeriali
     }
 
     private static @NotNull String mapToJson(@NotNull Map<String, String> map) {
-        StringBuilder jsonString = new StringBuilder("{");
+        JsonObject combinedJson = new JsonObject();
+
         for (Map.Entry<String, String> entry : map.entrySet()) {
-            jsonString.append("\"").append(entry.getKey()).append("\":");
-            jsonString.append("\"").append(entry.getValue()).append("\"");
-            jsonString.append(",");
+            String key = entry.getKey();
+            String value = entry.getValue();
+
+            combinedJson.addProperty(key, value);
         }
 
-        if (jsonString.length() > 1) {
-            jsonString.deleteCharAt(jsonString.length() - 1);
-        }
-        jsonString.append("}");
-        return jsonString.toString();
+        return gson.toJson(combinedJson);
     }
 
     private static @NotNull ObjectMap<String, String> jsonToMap(String jsonString) {
         ObjectMap<String, String> map = new HashObjectMap<>();
-        jsonString = jsonString.substring(1, jsonString.length() - 1);
-        String[] pairs = jsonString.split(",");
-        for (String pair : pairs) {
-            String[] keyValue = pair.split(":");
-            String key = keyValue[0].replace("\"", "").trim();
-            String value = keyValue[1].replace("\"", "").trim();
-            map.put(key, value);
-        }
+
+        map.putAll(gson.fromJson(jsonString, TypeToken.get(HashMap.class).getType()));
         return map;
     }
 }
