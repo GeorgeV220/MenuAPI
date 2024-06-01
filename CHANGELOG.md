@@ -1,3 +1,18 @@
+# [2.0.0](https://github.com/GeorgeV220/MenuAPI/compare/v1.3.0...v2.0.0) (2024-06-01)
+
+
+* refactor!: Major overhaul of SerializableItemStack deserialization ([b82af57](https://github.com/GeorgeV220/MenuAPI/commit/b82af57412cbd2576e5dc7eef7dbdeb24675a698))
+
+
+### Features
+
+* Add custom data support to SerializableItemStack ([5503d63](https://github.com/GeorgeV220/MenuAPI/commit/5503d636bbc86d7fdd0e96d5cc9f094c89539278))
+
+
+### BREAKING CHANGES
+
+* The deserialization process and data structure have changed significantly, impacting any dependent modules or services.
+
 # [1.3.0](https://github.com/GeorgeV220/MenuAPI/compare/v1.2.0...v1.3.0) (2024-05-30)
 
 
